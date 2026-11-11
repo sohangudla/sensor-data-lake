@@ -3,7 +3,7 @@
 
 ## 01_machines_most_alerts
 
-10 rows, 2415 ms
+10 rows, 1367 ms
 
 ```
 machine_id machine_type   plant  alert_events  alert_minutes  point_anomalies  critical_days
@@ -21,7 +21,7 @@ machine_id machine_type   plant  alert_events  alert_minutes  point_anomalies  c
 
 ## 02_daily_uptime
 
-7 rows, 38 ms
+7 rows, 35 ms
 
 ```
 event_date  fleet_avg_uptime_pct worst_machine  worst_uptime_pct  machines_below_95pct
@@ -36,7 +36,7 @@ event_date  fleet_avg_uptime_pct worst_machine  worst_uptime_pct  machines_below
 
 ## 03_fleet_health_by_day
 
-7 rows, 17 ms
+7 rows, 15 ms
 
 ```
 event_date  healthy  warning  critical  machines
@@ -51,7 +51,7 @@ event_date  healthy  warning  critical  machines
 
 ## 04_vibration_trend_with_moving_avg
 
-12 rows, 42 ms
+12 rows, 39 ms
 
 ```
 machine_id          hour_start  avg_vibration_mm_s  max_vibration_mm_s  moving_avg_3h  anomaly_count
@@ -91,7 +91,7 @@ machine_type         sensor  anomalies  per_machine_day  severe_pct
 
 ## 06_longest_alerts
 
-10 rows, 26 ms
+10 rows, 20 ms
 
 ```
                       alert_id machine_id machine_type         sensor direction         alert_start           alert_end  duration_min  anomaly_count  peak_abs_z

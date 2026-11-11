@@ -30,6 +30,7 @@ import argparse
 import gzip
 import json
 import logging
+import os
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -204,8 +205,16 @@ def generate(out_root: Path, cfg: GeneratorConfig, truth_dir: Path) -> dict:
         for k in corrupt_idx:
             lines[k] = lines[k][: len(lines[k]) // 2]        # truncated transmission
         n_corrupt += len(corrupt_idx)
-        with gzip.open(part / f"readings_{ts:%Y%m%d%H}.json.gz", "wt", encoding="utf-8") as fh:
+        # Atomic write: write under a temporary name that Spark ignores (files
+        # starting with "_" are skipped), then rename in one step. A pipeline
+        # reading the raw zone at the same moment can never see a half-written
+        # file. (Found when a pipeline run overlapped a generator run and read
+        # truncated gzip files: 5.8M instead of 6.07M rows.)
+        final = part / f"readings_{ts:%Y%m%d%H}.json.gz"
+        tmp = part / f"_tmp_{final.name}"
+        with gzip.open(tmp, "wt", encoding="utf-8") as fh:
             fh.write("\n".join(lines) + "\n")
+        os.replace(tmp, final)
         n_written += len(lines)
         files += 1
 

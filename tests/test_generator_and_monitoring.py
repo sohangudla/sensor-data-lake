@@ -16,6 +16,7 @@ def test_generator_injects_expected_problems(tmp_path):
     assert stats["lines_written"] == stats["unique_readings"] + stats["duplicates_injected"]
     files = sorted((tmp_path / "lake" / "raw" / "sensor_readings").rglob("*.json.gz"))
     assert len(files) >= 24
+    assert not any(f.name.startswith("_tmp_") for f in files)   # atomic writes left no temp files
     first = json.loads(gzip.open(files[0], "rt").readline())
     assert {"machine_id", "event_ts", "temperature_c", "vibration_mm_s", "pressure_bar"} <= set(first)
     truth = pd.read_csv(tmp_path / "truth" / "fault_episodes.csv")
