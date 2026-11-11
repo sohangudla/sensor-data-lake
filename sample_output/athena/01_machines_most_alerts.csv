@@ -1,0 +1,11 @@
+machine_id,machine_type,plant,alert_events,alert_minutes,point_anomalies,critical_days
+M019,conveyor,PLANT-A,6.0,41.6,1222.0,2.0
+M043,conveyor,PLANT-B,4.0,39.3,1522.0,1.0
+M011,conveyor,PLANT-A,4.0,31.8,1552.0,1.0
+M034,compressor,PLANT-B,4.0,16.8,1213.0,1.0
+M006,compressor,PLANT-A,4.0,7.7,1267.0,0.0
+M005,pump,PLANT-A,3.0,35.7,1510.0,1.0
+M027,conveyor,PLANT-B,3.0,33.0,1544.0,1.0
+M020,cnc_mill,PLANT-A,3.0,10.5,1229.0,0.0
+M049,pump,PLANT-B,3.0,10.2,1242.0,0.0
+M004,cnc_mill,PLANT-A,3.0,2.2,1210.0,0.0

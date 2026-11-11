@@ -1,0 +1,11 @@
+alert_id,machine_id,machine_type,sensor,direction,alert_start,alert_end,duration_min,anomaly_count,peak_abs_z
+M029-temperature_c-1793891185,M029,pump,temperature_c,HIGH,2026-11-05 15:06:25,2026-11-05 15:39:55,33.5,276,8.6
+M035-vibration_mm_s-1794005945,M035,conveyor,vibration_mm_s,HIGH,2026-11-06 22:59:05,2026-11-06 23:29:55,30.8,288,11.6
+M027-vibration_mm_s-1793798065,M027,conveyor,vibration_mm_s,HIGH,2026-11-04 13:14:25,2026-11-04 13:44:55,30.5,287,13.2
+M011-vibration_mm_s-1793933745,M011,conveyor,vibration_mm_s,HIGH,2026-11-06 02:55:45,2026-11-06 03:24:55,29.2,290,10.4
+M043-vibration_mm_s-1793873150,M043,conveyor,vibration_mm_s,HIGH,2026-11-05 10:05:50,2026-11-05 10:34:55,29.1,290,10.2
+M005-temperature_c-1793814100,M005,pump,temperature_c,HIGH,2026-11-04 17:41:40,2026-11-04 18:09:55,28.3,283,11.4
+M003-vibration_mm_s-1793736715,M003,conveyor,vibration_mm_s,HIGH,2026-11-03 20:11:55,2026-11-03 20:39:55,28.0,292,12.2
+M017-temperature_c-1794091665,M017,pump,temperature_c,HIGH,2026-11-07 22:47:45,2026-11-07 23:14:55,27.2,271,9.0
+M041-temperature_c-1794029620,M041,pump,temperature_c,HIGH,2026-11-07 05:33:40,2026-11-07 05:59:55,26.3,275,9.8
+M019-temperature_c-1793732700,M019,conveyor,temperature_c,LOW,2026-11-03 19:05:00,2026-11-03 19:19:05,14.1,7,3.7

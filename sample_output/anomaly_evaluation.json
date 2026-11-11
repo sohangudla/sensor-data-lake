@@ -1,0 +1,176 @@
+{
+  "anomaly_rows": 63743,
+  "true_positive_rows": 4608,
+  "precision_pct": 7.23,
+  "false_positive_rows": 59135,
+  "episodes": 13,
+  "episode_recall_pct": 100.0,
+  "median_detection_delay_min": 0.9,
+  "spikes": 1805,
+  "spikes_detected": 1762,
+  "spike_recall_pct": 97.6,
+  "false_positives_by_hour_utc": {
+    "0": 2057,
+    "1": 2199,
+    "2": 2310,
+    "3": 2576,
+    "4": 2793,
+    "5": 2829,
+    "6": 2077,
+    "7": 2909,
+    "8": 2645,
+    "9": 2531,
+    "10": 2244,
+    "11": 2125,
+    "12": 2033,
+    "13": 2146,
+    "14": 2370,
+    "15": 2671,
+    "16": 2771,
+    "17": 2946,
+    "18": 2994,
+    "19": 2936,
+    "20": 2646,
+    "21": 2463,
+    "22": 1818,
+    "23": 2046
+  },
+  "false_positives_by_sensor": {
+    "temperature_c": 26832,
+    "vibration_mm_s": 16154,
+    "pressure_bar": 16149
+  },
+  "episode_detail": [
+    {
+      "machine_id": "M003",
+      "fault_type": "bearing_wear",
+      "sensor": "vibration_mm_s",
+      "duration_min": 59.9,
+      "detected": true,
+      "first_detection_after_min": 0.9,
+      "anomaly_rows": 292
+    },
+    {
+      "machine_id": "M005",
+      "fault_type": "overheating",
+      "sensor": "temperature_c",
+      "duration_min": 49.9,
+      "detected": true,
+      "first_detection_after_min": 1.3,
+      "anomaly_rows": 283
+    },
+    {
+      "machine_id": "M007",
+      "fault_type": "pressure_leak",
+      "sensor": "pressure_bar",
+      "duration_min": 14.9,
+      "detected": true,
+      "first_detection_after_min": 0.0,
+      "anomaly_rows": 115
+    },
+    {
+      "machine_id": "M011",
+      "fault_type": "bearing_wear",
+      "sensor": "vibration_mm_s",
+      "duration_min": 59.9,
+      "detected": true,
+      "first_detection_after_min": 1.0,
+      "anomaly_rows": 290
+    },
+    {
+      "machine_id": "M017",
+      "fault_type": "overheating",
+      "sensor": "temperature_c",
+      "duration_min": 49.9,
+      "detected": true,
+      "first_detection_after_min": 2.2,
+      "anomaly_rows": 271
+    },
+    {
+      "machine_id": "M019",
+      "fault_type": "bearing_wear",
+      "sensor": "vibration_mm_s",
+      "duration_min": 59.9,
+      "detected": true,
+      "first_detection_after_min": 9.4,
+      "anomaly_rows": 49
+    },
+    {
+      "machine_id": "M023",
+      "fault_type": "pressure_leak",
+      "sensor": "pressure_bar",
+      "duration_min": 14.9,
+      "detected": true,
+      "first_detection_after_min": 0.0,
+      "anomaly_rows": 45
+    },
+    {
+      "machine_id": "M027",
+      "fault_type": "bearing_wear",
+      "sensor": "vibration_mm_s",
+      "duration_min": 59.9,
+      "detected": true,
+      "first_detection_after_min": 0.8,
+      "anomaly_rows": 287
+    },
+    {
+      "machine_id": "M029",
+      "fault_type": "overheating",
+      "sensor": "temperature_c",
+      "duration_min": 49.9,
+      "detected": true,
+      "first_detection_after_min": 1.5,
+      "anomaly_rows": 275
+    },
+    {
+      "machine_id": "M035",
+      "fault_type": "bearing_wear",
+      "sensor": "vibration_mm_s",
+      "duration_min": 59.9,
+      "detected": true,
+      "first_detection_after_min": 0.9,
+      "anomaly_rows": 287
+    },
+    {
+      "machine_id": "M039",
+      "fault_type": "pressure_leak",
+      "sensor": "pressure_bar",
+      "duration_min": 14.9,
+      "detected": true,
+      "first_detection_after_min": 0.0,
+      "anomaly_rows": 87
+    },
+    {
+      "machine_id": "M041",
+      "fault_type": "overheating",
+      "sensor": "temperature_c",
+      "duration_min": 49.9,
+      "detected": true,
+      "first_detection_after_min": 2.2,
+      "anomaly_rows": 275
+    },
+    {
+      "machine_id": "M043",
+      "fault_type": "bearing_wear",
+      "sensor": "vibration_mm_s",
+      "duration_min": 59.9,
+      "detected": true,
+      "first_detection_after_min": 0.7,
+      "anomaly_rows": 290
+    }
+  ],
+  "alert_evaluation": {
+    "alerts": 88,
+    "true_alerts": 13,
+    "alert_precision_pct": 14.8,
+    "episodes_alerted": 13,
+    "episodes": 13,
+    "alert_episode_recall_pct": 100.0,
+    "false_alerts_by_sensor": {
+      "temperature_c": 58,
+      "vibration_mm_s": 10,
+      "pressure_bar": 7
+    },
+    "false_alert_max_duration_min": 14.1
+  }
+}

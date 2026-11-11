@@ -1,0 +1,216 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  Sensor data lake: S3 lake bucket (raw/clean/curated), Glue job + catalog,
+  Athena workgroup, CloudWatch alarms/notifications and a monthly cost budget.
+  NOT DEPLOYED BY DEFAULT - review costs in infra/DEPLOYMENT.md first.
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: sensor-lake
+    AllowedPattern: "[a-z0-9-]+"
+  AlertEmail:
+    Type: String
+    Description: Email for job-failure, data-quality and budget notifications
+  MonthlyBudgetUSD:
+    Type: Number
+    Default: 5
+  GlueWorkers:
+    Type: Number
+    Default: 2
+    MinValue: 2
+
+Resources:
+  # ------------------------------------------------------------- storage
+  LakeBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "${ProjectName}-${AWS::AccountId}-${AWS::Region}"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault: {SSEAlgorithm: AES256}
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      VersioningConfiguration: {Status: Enabled}
+      LifecycleConfiguration:
+        Rules:
+          - Id: raw-to-infrequent-access
+            Status: Enabled
+            Prefix: sensor-lake/raw/
+            Transitions:
+              - {StorageClass: STANDARD_IA, TransitionInDays: 30}
+          - Id: expire-athena-results
+            Status: Enabled
+            Prefix: athena-results/
+            ExpirationInDays: 7
+          - Id: expire-old-versions
+            Status: Enabled
+            NoncurrentVersionExpiration: {NoncurrentDays: 7}
+
+  # ------------------------------------------------------------- IAM
+  GlueJobRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: {Service: glue.amazonaws.com}
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole
+      Policies:
+        - PolicyName: lake-access
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow                       # least privilege: this bucket only
+                Action: [s3:GetObject, s3:PutObject, s3:DeleteObject, s3:ListBucket]
+                Resource:
+                  - !GetAtt LakeBucket.Arn
+                  - !Sub "${LakeBucket.Arn}/*"
+              - Effect: Allow
+                Action: cloudwatch:PutMetricData
+                Resource: "*"
+                Condition:
+                  StringEquals: {"cloudwatch:namespace": SensorLake}
+
+  # ------------------------------------------------------------- catalog + job
+  GlueDatabase:
+    Type: AWS::Glue::Database
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      DatabaseInput:
+        Name: sensor_lake
+        Description: Curated sensor data lake tables (queried by Athena)
+
+  CuratedCrawler:
+    Type: AWS::Glue::Crawler
+    Properties:
+      Name: !Sub "${ProjectName}-curated-crawler"
+      Role: !GetAtt GlueJobRole.Arn
+      DatabaseName: !Ref GlueDatabase
+      Targets:
+        S3Targets:
+          - Path: !Sub "s3://${LakeBucket}/sensor-lake/curated/hourly_machine_metrics/"
+          - Path: !Sub "s3://${LakeBucket}/sensor-lake/curated/daily_machine_performance/"
+          - Path: !Sub "s3://${LakeBucket}/sensor-lake/curated/anomalies/"
+          - Path: !Sub "s3://${LakeBucket}/sensor-lake/curated/alerts/"
+          - Path: !Sub "s3://${LakeBucket}/sensor-lake/curated/dim_machine/"
+      SchemaChangePolicy:
+        UpdateBehavior: UPDATE_IN_DATABASE
+        DeleteBehavior: LOG
+
+  PipelineJob:
+    Type: AWS::Glue::Job
+    Properties:
+      Name: !Sub "${ProjectName}-pipeline"
+      Role: !GetAtt GlueJobRole.Arn
+      GlueVersion: "5.0"
+      WorkerType: G.1X
+      NumberOfWorkers: !Ref GlueWorkers
+      Timeout: 30                               # minutes: hard cap on cost
+      MaxRetries: 0
+      ExecutionProperty: {MaxConcurrentRuns: 1}
+      Command:
+        Name: glueetl
+        PythonVersion: "3"
+        ScriptLocation: !Sub "s3://${LakeBucket}/code/glue_job.py"
+      DefaultArguments:
+        "--LAKE_ROOT": !Sub "s3://${LakeBucket}/sensor-lake"
+        "--extra-py-files": !Sub "s3://${LakeBucket}/code/sensor_lake.zip"
+        "--enable-continuous-cloudwatch-log": "true"
+        "--enable-metrics": "true"
+        "--job-language": python
+
+  # ------------------------------------------------------------- query
+  AthenaWorkGroup:
+    Type: AWS::Athena::WorkGroup
+    Properties:
+      Name: !Sub "${ProjectName}-wg"
+      WorkGroupConfiguration:
+        EnforceWorkGroupConfiguration: true
+        BytesScannedCutoffPerQuery: 1073741824  # 1 GB per query: cost guardrail
+        ResultConfiguration:
+          OutputLocation: !Sub "s3://${LakeBucket}/athena-results/"
+
+  # ------------------------------------------------------------- monitoring
+  AlertTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub "${ProjectName}-alerts"
+      Subscription:
+        - {Protocol: email, Endpoint: !Ref AlertEmail}
+
+  AlertTopicPolicy:
+    Type: AWS::SNS::TopicPolicy
+    Properties:
+      Topics: [!Ref AlertTopic]
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: {Service: events.amazonaws.com}
+            Action: sns:Publish
+            Resource: !Ref AlertTopic
+
+  JobFailedRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: Notify when the Glue pipeline job fails or times out
+      EventPattern:
+        source: [aws.glue]
+        detail-type: [Glue Job State Change]
+        detail:
+          jobName: [!Ref PipelineJob]
+          state: [FAILED, TIMEOUT, ERROR]
+      Targets:
+        - Arn: !Ref AlertTopic
+          Id: sns
+
+  ValidationFailureAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub "${ProjectName}-validation-failures"
+      AlarmDescription: Output data failed automated validation checks
+      Namespace: SensorLake
+      MetricName: ValidationFailures
+      Dimensions:
+        - {Name: JobName, Value: sensor-lake-pipeline}
+      Statistic: Maximum
+      Period: 3600
+      EvaluationPeriods: 1
+      Threshold: 0
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [!Ref AlertTopic]
+
+  CostBudget:
+    Type: AWS::Budgets::Budget
+    Properties:
+      Budget:
+        BudgetName: !Sub "${ProjectName}-monthly"
+        BudgetType: COST
+        TimeUnit: MONTHLY
+        BudgetLimit: {Amount: !Ref MonthlyBudgetUSD, Unit: USD}
+      NotificationsWithSubscribers:
+        - Notification:
+            NotificationType: ACTUAL
+            ComparisonOperator: GREATER_THAN
+            Threshold: 80
+          Subscribers:
+            - {SubscriptionType: EMAIL, Address: !Ref AlertEmail}
+        - Notification:
+            NotificationType: FORECASTED
+            ComparisonOperator: GREATER_THAN
+            Threshold: 100
+          Subscribers:
+            - {SubscriptionType: EMAIL, Address: !Ref AlertEmail}
+
+Outputs:
+  LakeBucketName: {Value: !Ref LakeBucket}
+  GlueJobName: {Value: !Ref PipelineJob}
+  AthenaWorkGroup: {Value: !Ref AthenaWorkGroup}

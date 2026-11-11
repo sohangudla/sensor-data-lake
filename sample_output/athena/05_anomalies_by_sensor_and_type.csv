@@ -1,0 +1,13 @@
+machine_type,sensor,anomalies,per_machine_day,severe_pct
+cnc_mill,pressure_bar,4008,47.7,3.5
+cnc_mill,temperature_c,6645,79.1,2.0
+cnc_mill,vibration_mm_s,4019,47.8,3.5
+compressor,pressure_bar,4421,48.6,3.3
+compressor,temperature_c,7169,78.8,2.2
+compressor,vibration_mm_s,4241,46.6,3.4
+conveyor,pressure_bar,4205,50.1,6.5
+conveyor,temperature_c,6492,77.3,2.4
+conveyor,vibration_mm_s,5619,66.9,9.5
+pump,pressure_bar,4356,47.9,3.6
+pump,temperature_c,8232,90.5,4.5
+pump,vibration_mm_s,4336,47.6,3.3

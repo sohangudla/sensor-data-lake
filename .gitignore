@@ -1,0 +1,18 @@
+# generated data (regenerate with: python -m sensor_lake.generator)
+lake/
+ground_truth/
+build/
+windows_compat/*.jar
+
+# secrets
+.env
+*.env
+
+# runtime
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+spark-warehouse/
+metastore_db/
+derby.log
