@@ -1,6 +1,6 @@
 # Project Report: Manufacturing Sensor Data Lake
 
-**Author:** [Your Name], B.Tech Electronics and Communication Engineering
+**Author:** G. Sohan, B.Tech Electronics and Communication Engineering
 **Type:** Individual data engineering portfolio project
 **Date:** November 2026
 **Stack:** Python 3.11 · PySpark 3.5 · Parquet · DuckDB · Streamlit · pytest + moto ·
