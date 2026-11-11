@@ -16,4 +16,4 @@ test_generator_and_monitoring.py::test_generator_injects_expected_problems PASSE
 test_generator_and_monitoring.py::test_generator_is_deterministic PASSED [ 88%]
 test_generator_and_monitoring.py::test_publish_metrics_to_cloudwatch PASSED [ 94%]
 test_generator_and_monitoring.py::test_publish_disabled_without_flag PASSED [100%]
-======================= 18 passed in 263.24s (0:04:23) ========================
+======================= 18 passed in 202.15s (0:03:22) ========================
