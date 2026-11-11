@@ -1,5 +1,7 @@
 # Manufacturing Sensor Data Lake
 
+> 📄 **Full project report:** [docs/PROJECT_REPORT.md](docs/PROJECT_REPORT.md)
+
 A batch data lake for machine sensor readings. **6.04 million** simulated temperature,
 vibration and pressure readings from **50 machines** flow through **raw -> clean ->
 curated** layers with PySpark. The pipeline cleans and validates the data, computes

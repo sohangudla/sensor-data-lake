@@ -16,3 +16,7 @@ __pycache__/
 spark-warehouse/
 metastore_db/
 derby.log
+
+# JVM crash logs (contain local paths / system info)
+hs_err_pid*.log
+pipeline_run.log

@@ -12,7 +12,11 @@ SHIM_JAR = PROJECT_ROOT / "windows_compat" / "windows-localfs.jar"
 
 
 def get_spark(app_name: str = "sensor-lake", master: str = "local[*]",
-              shuffle_partitions: int = 16, driver_memory: str = "4g") -> SparkSession:
+              shuffle_partitions: int = 16, driver_memory: str | None = None) -> SparkSession:
+    # Default 4g. On a laptop that is short of RAM (the JVM then fails at start
+    # with "insufficient memory ... G1 virtual space"), set e.g.
+    #   SENSOR_LAKE_DRIVER_MEMORY=3g
+    driver_memory = driver_memory or os.getenv("SENSOR_LAKE_DRIVER_MEMORY", "4g")
     # make the executors use the same Python as the driver
     os.environ.setdefault("PYSPARK_PYTHON", sys.executable)
     os.environ.setdefault("PYSPARK_DRIVER_PYTHON", sys.executable)
